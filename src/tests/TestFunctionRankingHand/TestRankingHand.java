@@ -68,8 +68,6 @@ public class TestRankingHand {
         GameCards player1 = new GameCards(a,b);
         player1.put(c,d,e,f,g);
 
-        //System.out.println("One Pair: "+player1);
-
         String testName = "testRankingHand_OnePair_NormalCase";
         int expectedResult = 1;
         FunctionRankingHand.rankingHand(player1);
@@ -80,7 +78,7 @@ public class TestRankingHand {
     }
 
     @Test
-    public void testRankingHand_OnePair_PairofA(){
+    public void testRankingHand_OnePair_PairOfA(){
         Card a = new Card(1,1),
                 b = new Card(3,1),
                 c = new Card(4,4),
@@ -94,7 +92,7 @@ public class TestRankingHand {
 
         //System.out.println("One Pair: "+player1);
 
-        String testName = "testRankingHand_OnePair_NormalCase";
+        String testName = "testRankingHand_OnePair_PairOfA";
         int expectedResult = 1;
         FunctionRankingHand.rankingHand(player1);
         int resultObtained = player1.rankingGame;

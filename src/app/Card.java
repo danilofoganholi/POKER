@@ -107,7 +107,4 @@ public class Card {
         return value == card.value && suit == card.suit;
     }
 
-//    public boolean equals(Card card) {
-//        return value == card.value && suit == card.suit;
-//    }
 }
