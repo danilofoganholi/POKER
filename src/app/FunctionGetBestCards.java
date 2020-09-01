@@ -1,5 +1,7 @@
 package app;
 
+import java.util.Arrays;
+
 public class FunctionGetBestCards {
 
     public static void getBestCards(GameCards gameCards){
@@ -44,7 +46,7 @@ public class FunctionGetBestCards {
 //        System.out.println(Arrays.toString(gameCards.bestCards));
     }
 
-    private static void highCard(GameCards gameCards){
+    public static void highCard(GameCards gameCards){
         int j=0, i=6;
         if (gameCards.cards[j].value==1){
             gameCards.bestCards[j]=gameCards.cards[0];
@@ -56,7 +58,7 @@ public class FunctionGetBestCards {
         }
     }
 
-    private static void onePair(GameCards gameCards) {
+    public static void onePair(GameCards gameCards) {
         int value=0;//value of pair
         int j=0;//index of array best cards
 
@@ -84,7 +86,7 @@ public class FunctionGetBestCards {
         }
     }
 
-    private static void twoPair(GameCards gameCards) {
+    public static void twoPair(GameCards gameCards) {
         int value=0,//value of pair
         value1 = 0; // second pair
 
@@ -119,12 +121,13 @@ public class FunctionGetBestCards {
             for (int i=6; i>=0; i--){
                 if (gameCards.cards[i].value!=value && gameCards.cards[i].value!=value1){
                     gameCards.bestCards[4]=gameCards.cards[i];
+                    break;
                 }
             }
         }
     }
 
-    private static void threeOfAKind(GameCards gameCards) {
+    public static void threeOfAKind(GameCards gameCards) {
         int value=0;//value of Three Of A Kind
         if (gameCards.cards[0].value==1 && gameCards.cards[1].value==1){
             gameCards.bestCards[0]=gameCards.cards[0];
@@ -163,39 +166,54 @@ public class FunctionGetBestCards {
         }
     }
 
-    private static void stright(GameCards gameCards){
+    public static void stright(GameCards gameCards){
         boolean[] havecards = new boolean[13];
         int value=0;
+
         for (Card card : gameCards.cards){//get only values exists or not
             havecards[(card.value-1)]=true;
         }
-        for (int index=0; index<=9;index++){//get the first element of stright
-            if ((index==9 && havecards[index] && havecards[index+1] && havecards[index+2] && havecards[index+3]
-                    && havecards[0]) || (havecards[index] && havecards[index+1] && havecards[index+2] &&
-                    havecards[index+3] && havecards[index+4]) ){
-                value = index+1;
-                break;
+
+        if (havecards[9] && havecards[10] && havecards[11] && havecards[12] && havecards[0]){
+            value = 10;
+        }else {
+            for (int index=8; index>=0;index--){//get the first element of stright
+                if (havecards[index] && havecards[index+1] && havecards[index+2] && havecards[index+3] && havecards[index+4]){
+                    value = index+1;
+                    break;
+                }
             }
         }
-        if (value==9){
+
+        if (value==10){
             gameCards.bestCards[0]=gameCards.cards[0];
-            for (int index=1, count=4, i=6; index<=4; i--){//fill the bestCards with a stright
-                if (gameCards.cards[i].value==value+count){
-                    gameCards.bestCards[index]=gameCards.cards[i];
-                    index++;count--;
+            for (int i=6; i>=0;i--){
+                switch (gameCards.cards[i].value){
+                    case 10:
+                        gameCards.bestCards[4]=gameCards.cards[i];
+                        break;
+                    case 11:
+                        gameCards.bestCards[3]=gameCards.cards[i];
+                        break;
+                    case 12:
+                        gameCards.bestCards[2]=gameCards.cards[i];
+                        break;
+                    case 13:
+                        gameCards.bestCards[1]=gameCards.cards[i];
+                        break;
                 }
             }
         }else {
-            for (int index=0, count=4, i=6; index<=4; i--){//fill the bestCards with a stright
-                if (gameCards.cards[i].value==value+count){
+            for (int index=0, i=6; i>=0 && index<=4;i--){//fill the bestCards with a stright
+                if (gameCards.cards[i].value==value+(4-index)){
                     gameCards.bestCards[index]=gameCards.cards[i];
-                    index++;count--;
+                    index++;
                 }
             }
         }
     }
 
-    private static void flush(GameCards gameCards){
+    public static void flush(GameCards gameCards){
         int value=0;
         int suitFlush = FunctionRankingHand.isFlush(gameCards);//get the suit of flush
         // if the first card is A and has the same flush suit, then it is the highest card
@@ -211,8 +229,22 @@ public class FunctionGetBestCards {
         }
     }
 
-    private static void fullHouse(GameCards gameCards) {
+    public static void fullHouse(GameCards gameCards) {
         int value=0;//value of Three Of A Kind
+
+        if (gameCards.cards[0].value==1 && gameCards.cards[2].value==1){
+            gameCards.bestCards[0]=gameCards.cards[0];
+            gameCards.bestCards[1]=gameCards.cards[1];
+            gameCards.bestCards[2]=gameCards.cards[2];
+
+            for(int i=6; i>=1;i--){//put the pair at the beginning
+                if (gameCards.cards[i].value!=value && gameCards.cards[i].value==gameCards.cards[i-1].value){
+                    gameCards.bestCards[3]=gameCards.cards[i-1];
+                    gameCards.bestCards[4]=gameCards.cards[i];
+                    return;
+                }
+            }
+        }
         for (int j=6; j>=2; j--){//put Three of a Kind in the begin of array bestCards
             if (gameCards.cards[j].value==gameCards.cards[j-1].value &&
                     gameCards.cards[j].value==gameCards.cards[j-2].value){
@@ -223,20 +255,27 @@ public class FunctionGetBestCards {
                 break;
             }
         }
-        for(int i=6; i>=1;i--){//put the pair at the beginning
-            if (gameCards.cards[i].value!=value && gameCards.cards[i].value==gameCards.cards[i-1].value){
-                gameCards.bestCards[3]=gameCards.cards[i-1];
-                gameCards.bestCards[4]=gameCards.cards[i];
-                break;
+
+        if (gameCards.cards[0].value==1 && gameCards.cards[1].value==1){
+            gameCards.bestCards[3]=gameCards.cards[0];
+            gameCards.bestCards[4]=gameCards.cards[1];
+        }else {
+            for(int i=6; i>=1;i--){//put the pair at the beginning
+                if (gameCards.cards[i].value!=value && gameCards.cards[i].value==gameCards.cards[i-1].value){
+                    gameCards.bestCards[3]=gameCards.cards[i-1];
+                    gameCards.bestCards[4]=gameCards.cards[i];
+                    return;
+                }
             }
         }
     }
 
-    private static void fourOfAKind(GameCards gameCards) {
+    public static void fourOfAKind(GameCards gameCards) {
         int value=0;//value of Four Of A Kind
 
         for (int i =6;i>=3;i--){
             if (gameCards.cards[i].value==gameCards.cards[i-1].value &&
+                    gameCards.cards[i-1].value==gameCards.cards[i-2].value &&
                     gameCards.cards[i-2].value==gameCards.cards[i-3].value){
                 value=gameCards.cards[i].value;
                 gameCards.bestCards[0]=gameCards.cards[i-3];
@@ -258,7 +297,7 @@ public class FunctionGetBestCards {
         }
     }
 
-    private static void strightFlush(GameCards gameCards){
+    public static void strightFlush(GameCards gameCards){
         int flushSuit = FunctionRankingHand.isFlush(gameCards);//get the suit of flush
 
         for (int index=0, i=6; i>=0;i--){
@@ -272,28 +311,29 @@ public class FunctionGetBestCards {
         }
     }
 
-    private static void royalStrightFlush(GameCards gameCards){
+    public static void royalStrightFlush(GameCards gameCards){
         int flushSuit1 = FunctionRankingHand.isFlush(gameCards);//get the suit of flush
-        for (Card card:gameCards.cards){
+
+        for (Card card:gameCards.cards){//fill the bestCards
             if (card.suit==flushSuit1){
                 switch (card.value){
                     case 10:
-                        gameCards.bestCards[4]=card;
+                            gameCards.bestCards[4]=card;
                         break;
                     case 11:
-                        gameCards.bestCards[3]=card;
+                            gameCards.bestCards[3]=card;
                         break;
                     case 12:
-                        gameCards.bestCards[2]=card;
+                            gameCards.bestCards[2]=card;
                         break;
                     case 13:
-                        gameCards.bestCards[1]=card;
+                            gameCards.bestCards[1]=card;
                         break;
                     case 1:
-                        gameCards.bestCards[0]=card;
+                            gameCards.bestCards[0]=card;
                         break;
                 }
             }
-        }////fill the bestCards
+        }
     }
 }

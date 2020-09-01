@@ -1,24 +1,4 @@
 package app;
-/*
-1 - Clubs
-2 - Hearts
-3 - Spades
-4 - Diamonds
-*/
-
-/*
-Subtitle
-9  - Royal Straight Flush   = done
-8  - Straight Flush         = done
-7  - Four of a King         = done
-6  - Full House             = done
-5  - Flush                  = done
-4  - Straight               = done
-3  - Three of a Kind        = done
-2  - Two Pair               = done
-1  - One Pair               = done
-0  - High Card              = done
-*/
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,42 +10,183 @@ public class Main {
     //values of suits
     public static String[] valueSuitS = new String[]{"♣","♥","♠","♦"};
     //ranking hands games for texas holdem
-    static String[] typesOfGames = {"Carta Alta","Um Par","Dois Pares","Trinca","Sequencia",
+    public static String[] typesOfGames = {"Carta Alta","Um Par","Dois Pares","Trinca","Sequencia",
             "Flush","Full House","Quadra","Straight Flush","Royal Straight Flush"};
 
+    public static  ArrayList<Card> deck = new ArrayList<>();
+
+    /*
+        1 - Clubs
+        2 - Hearts
+        3 - Spades
+        4 - Diamonds
+    */
+
+    /*
+        Subtitle
+        9  - Royal Straight Flush   = done
+        8  - Straight Flush         = done
+        7  - Four of a King         = done
+        6  - Full House             = done
+        5  - Flush                  = done
+        4  - Straight               = done
+        3  - Three of a Kind        = done
+        2  - Two Pair               = done
+        1  - One Pair               = done
+        0  - High Card              = done
+    */
+
     public static int whoWins(GameCards player1, GameCards player2){
-        System.out.println("A");
         FunctionRankingHand.rankingHand(player1);
-        System.out.println("B");
         FunctionRankingHand.rankingHand(player2);
-        System.out.println("C");
+
         if (player1.rankingGame>player2.rankingGame){//if player one have more ranking to the second player
-            System.out.println("D");
             return 1;
         }else if (player2.rankingGame>player1.rankingGame){//if player two have more ranking to the first player
-            System.out.println("E");
             return 2;
         }else {//if they have the same ranking level needs tiebreak
-            System.out.println("F");
+
             FunctionGetBestCards.getBestCards(player1);//get the 5 best cards
-            System.out.println("G");
+
             FunctionGetBestCards.getBestCards(player2);//get the 5 best cards
-            System.out.println("H");
+
             for (int i=0; i<=4;i++){//compare
                 if (player1.bestCards[i].value>player2.bestCards[i].value){
-                    System.out.println("I");
+
                     return 1;
                 }else if (player1.bestCards[i].value<player2.bestCards[i].value){
-                    System.out.println("J");
+
                     return 2;
                 }
             }
         }
-        System.out.println("K");
         return 0;
     }
 
-    public static float probability(GameCards player1 ){
+    public static void createDeck(){
+        deck = new ArrayList<>();
+        for (int value=1, suit=1 ; value<=13 && suit<=4; value++){//create a deck array list
+            deck.add(new Card(value,suit));
+            if (value==13){
+                if (suit==4){
+                    break;
+                }
+                suit++;
+                value=0;
+            }
+        }
+    }
+
+    public static long[] tableCards(GameCards player1, GameCards player2){
+        long win = 0,lose = 0,tie = 0,error = 0;
+        int result;
+
+        //removes the cards that have already gone
+        deck.remove(player1.cards[0]);
+        deck.remove(player1.cards[1]);
+        deck.remove(player2.cards[0]);
+        deck.remove(player2.cards[1]);
+
+        //  1 712 304
+        for (int x=0; x<deck.size();x++){
+
+            for (int y=x+1; y<deck.size();y++){
+
+                for (int z=y+1; z<deck.size(); z++){
+
+                    for (int t=z+1; t<deck.size(); t++){
+
+                        for (int r=t+1; r<deck.size(); r++){
+
+                            player1.put(deck.get(x),deck.get(y),deck.get(z),deck.get(t),deck.get(r));
+                            player2.put(deck.get(x),deck.get(y),deck.get(z),deck.get(t),deck.get(r));
+
+                            result = whoWins(player1, player2);
+
+                            switch (result){
+                                case 0:
+                                    tie++;
+                                    break;
+                                case 1:
+                                    win++;
+                                    break;
+                                case 2:
+                                    lose++;
+                                    break;
+                                default:
+                                    error++;
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        createDeck();
+
+        return new long[]{win,lose,tie,error};
+    }
+
+    public static void probability(){
+        long win, lose,tie,error;
+        GameCards player1;
+        GameCards player2;
+        long[] resp;
+
+        createDeck();
+        // 'a' e 'b'  = cards of a player 1
+        // 'c' e 'd'  = cards of a player 2
+        long startTime = System.currentTimeMillis();
+
+        //1.624.350
+        for (int a=0; a<deck.size();a++){
+
+            for (int b=a+1; b<deck.size();b++){
+
+                win = 0;
+                lose = 0;
+                tie = 0;
+                error = 0;
+
+                for (int c=0; c<deck.size(); c++){
+
+                    if (!deck.get(c).equals(deck.get(a)) && !deck.get(c).equals(deck.get(b))){
+
+                        for (int d=c+1; d<deck.size(); d++){
+
+                            if (!deck.get(d).equals(deck.get(a)) && !deck.get(d).equals(deck.get(b))){
+
+                                player1 = new GameCards(deck.get(a),deck.get(b));
+                                player2 = new GameCards(deck.get(c),deck.get(d));
+
+                                resp = tableCards(player1,player2);
+
+                                win += resp[0];
+                                lose += resp[1];
+                                tie += resp[2];
+                                error += resp[3];
+                            }
+                        }
+                    }
+                }
+                double soma = (double) win+lose+tie+error;
+                String porcentWIN = String.format("%.2f",  (((double)(100*win))/(soma)));
+                String porcentLOSE = String.format("%.2f",  (((double)(100*lose))/(soma)));
+                String porcentTIE = String.format("%.2f",  (((double)(100*tie))/(soma)));
+                String porcentERROR = String.format("%.2f",  (((double)(100*error))/(soma)));
+
+                long endTime = System.currentTimeMillis();
+                System.out.println(deck.get(a).toString()+" | "+deck.get(b).toString()+
+                        " = WIN:"+win+"-"+porcentWIN+"% | LOSE:"+lose+"-"+porcentLOSE+
+                        "% | TIE:"+tie+"-"+porcentTIE+"% | ERROR:"+error+"-"+porcentERROR+"%");
+                System.out.println("That took " + (endTime - startTime)+ " milliseconds\n");
+            }
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("Everything took " + (endTime - startTime)+ " milliseconds");
+    }
+
+    public static float arrnajoSimples(GameCards player1){
         long win = 0;
         long lose = 0;
         long tie = 0;
@@ -95,6 +216,7 @@ public class Main {
                     new Card(13,4)
                 };
 
+
         ArrayList<Card> player1Cards = new ArrayList<>(Arrays.asList(player1.cards));
         GameCards player2;
 
@@ -111,63 +233,67 @@ public class Main {
         // z        = 50x49x48x47x46            = 254.251.200           =5787
         // t        = 50x49x48x47x46x45         = 11.441.304.000        =238662
         // r        = 50x49x48x47x46x45x44      = 503.417.376.000       =13113309
+
+        //11h27min38s == souza
+        //14h40min28s == rafa
+        //15h22min56s == danilo
         //6-26-41
         long startTime = System.currentTimeMillis();
-        for (Card a : deck){//a
 
-            if (!player1Cards.contains(a)){//check if is not a repeated card
+        for (Card a : deck) {//a
 
-                for (Card b : deck){//b
+            if (!player1Cards.contains(a)) {//check if is not a repeated card
+                long start = System.currentTimeMillis();
+                for (Card b : deck) {//b
 
-                    if (!player1Cards.contains(b) && !b.equals(a)){//check if is not a repeated card
-                        player2 = new GameCards(a,b);
-                        for (Card x : deck){//x
+                    if (!player1Cards.contains(b) && !b.equals(a)) {//check if is not a repeated card
+                        player2 = new GameCards(a, b);
+                        for (Card x : deck) {//x
 
-                            if (!player1Cards.contains(x) && !x.equals(a) && !x.equals(b)){
+                            if (!player1Cards.contains(x) && !x.equals(a) && !x.equals(b)) {
 
-                                for (Card y : deck){//y
+                                for (Card y : deck) {//y
 
-                                    if (!player1Cards.contains(y) && !y.equals(a) && !y.equals(b) && !y.equals(x)){
+                                    if (!player1Cards.contains(y) && !y.equals(a) && !y.equals(b) && !y.equals(x)) {
 
-                                        for (Card z : deck){//z
+                                        for (Card z : deck) {//z
 
                                             if (!player1Cards.contains(z) && !z.equals(a) && !z.equals(b) &&
-                                                    !z.equals(x) && !z.equals(y)){
+                                                    !z.equals(x) && !z.equals(y)) {
 
-                                                for (Card t : deck){//t
+                                                for (Card t : deck) {//t
 
                                                     if (!player1Cards.contains(t) && !t.equals(a) && !t.equals(b) &&
-                                                            !t.equals(x) && !t.equals(y) && !t.equals(z)){
+                                                            !t.equals(x) && !t.equals(y) && !t.equals(z)) {
 //
-                                                        for (Card r : deck){//r
+                                                        for (Card r : deck) {//r
 
                                                             if (!player1Cards.contains(r) && !r.equals(a) &&
                                                                     !r.equals(b) && !r.equals(x) && !r.equals(y) &&
-                                                                    !r.equals(z) && !r.equals(t)){
+                                                                    !r.equals(z) && !r.equals(t)) {
 
-                                                                player1.put(x,y,z,r,t);
-                                                                player2.put(x,y,z,r,t);
-                                                                int result=-1;
-                                                                try{
-                                                                    result = whoWins(player1,player2);
-                                                                }catch (ArrayIndexOutOfBoundsException |
-                                                                        NullPointerException exception){
+                                                                player1.put(x, y, z, r, t);
+                                                                player2.put(x, y, z, r, t);
+                                                                int result = -1;
+                                                                try {
+                                                                    result = whoWins(player1, player2);
+                                                                } catch (ArrayIndexOutOfBoundsException |
+                                                                        NullPointerException exception) {
                                                                     System.out.println(exception);
-                                                                    System.out.println("Player1 ="+player1.rankingGame);
-                                                                    System.out.println("Player2 ="+player2.rankingGame);
-                                                                    System.out.println("A="+a+" | B="+b+" | X="+x+
-                                                                            " | Y="+y+" | Z="+z+" | T="+t+" | R="+r);
-                                                                    return 0.0f;
+                                                                    System.out.println("Player1 =" + player1.rankingGame);
+                                                                    System.out.println("Player2 =" + player2.rankingGame);
+                                                                    System.out.println("A=" + a + " | B=" + b + " | X=" + x +
+                                                                            " | Y=" + y + " | Z=" + z + " | T=" + t + " | R=" + r);
                                                                 }
 
 
-                                                                if (result==1){
+                                                                if (result == 1) {
                                                                     win++;
-                                                                }else if (result==2){
+                                                                } else if (result == 2) {
                                                                     lose++;
-                                                                }else if (result==0){
+                                                                } else if (result == 0) {
                                                                     tie++;
-                                                                }else{
+                                                                } else {
                                                                     error++;
                                                                 }
                                                             }
@@ -182,9 +308,10 @@ public class Main {
                         }
                     }
                 }
+                long end = System.currentTimeMillis();
+                System.out.println("CYCLE = " + (end - start) + " milliseconds");
             }
         }
-        System.out.println(count);
         long endTime = System.currentTimeMillis();
         System.out.println("That took " + (endTime - startTime)+ " milliseconds");
         System.out.println("WIN = "+win);
@@ -202,10 +329,13 @@ public class Main {
 //        Card firstCard = Card.getCard();
 //        Card secondCard = Card.getCard();
 
-        Card firstCard = new Card(1,1);
-        Card secondCard = new Card(1,2);
-        GameCards gameCards = new GameCards(firstCard,secondCard);
+//        GameCards player2 = new GameCards(new Card(1,1),new Card(1,2));
+//        GameCards player1 = new GameCards(new Card(1,3),new Card(1,4));
 
-        probability(gameCards);
+//        createDeck();
+//        long[] teste = tableCards(player1,player2);
+//        long soma = teste[0]+teste[1]+teste[2]+teste[3];
+//        System.out.println("SOMA:"+ soma );
+        probability();
     }
 }

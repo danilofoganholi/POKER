@@ -2,7 +2,6 @@ package tests.TestFunctionGetBestCards;
 
 import app.*;
 import org.junit.Test;
-
 import static org.junit.Assert.*;
 
 public class TestGetBestCards {
@@ -31,7 +30,7 @@ public class TestGetBestCards {
     }
 
     @Test
-    public void testGetBestCards_HighCardWithA(){
+    public void testGetBestCards_HighCard_WithA(){
         Card a = new Card(12,1),
                 b = new Card(3,2),
                 c = new Card(4,3),
@@ -54,6 +53,7 @@ public class TestGetBestCards {
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
 
+    ///////////////////////////////////////////////////
     @Test
     public void testGetBestCards_OnePair(){
         Card    a = new Card(11,1),
@@ -79,7 +79,7 @@ public class TestGetBestCards {
     }
 
     @Test
-    public void testGetBestCards_OnePairWithA(){
+    public void testGetBestCards_OnePair_WithA(){
         Card    a = new Card(1,1),
                 b = new Card(2,1),
                 c = new Card(4,4),
@@ -101,6 +101,8 @@ public class TestGetBestCards {
                 "TEST: "+testName+"\nINPUT: "+player1.toString();
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
+
+    //////////////////////////////////////////////////
 
     @Test
     public void testGetBestCards_TwoPair(){
@@ -125,6 +127,8 @@ public class TestGetBestCards {
                 "TEST: "+testName+"\nINPUT: "+player1.toString();
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
+
+    //////////////////////////////////////////////////
 
     @Test
     public void testGetBestCards_ThreeOfAKind(){
@@ -151,7 +155,7 @@ public class TestGetBestCards {
     }
 
     @Test
-    public void testGetBestCards_ThreeOfAKindWithAS(){
+    public void testGetBestCards_ThreeOfAKind_WithAS(){
         Card    a = new Card(1,1),
                 b = new Card(2,1),
                 c = new Card(4,4),
@@ -173,6 +177,8 @@ public class TestGetBestCards {
                 "TEST: "+testName+"\nINPUT: "+player1.toString();
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
+
+    //////////////////////////////////////////////////
 
     @Test
     public void testGetBestCards_Straight(){
@@ -270,6 +276,8 @@ public class TestGetBestCards {
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
 
+    //////////////////////////////////////////////////
+
     @Test
     public void testGetBestCards_Flush(){
         Card a = new Card(1,1),
@@ -294,6 +302,8 @@ public class TestGetBestCards {
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
 
+    //////////////////////////////////////////////////
+
     @Test
     public void testGetBestCards_FullHouse(){
         Card    a = new Card(1,1),
@@ -315,6 +325,8 @@ public class TestGetBestCards {
                 "TEST: "+testName+"\nINPUT: "+player1.toString();
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
+
+    //////////////////////////////////////////////////
 
     @Test
     public void testGetBestCards_FourOfAKing(){
@@ -340,6 +352,8 @@ public class TestGetBestCards {
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
 
+    //////////////////////////////////////////////////
+
     @Test
     public void testGetBestCards_StraightFlush(){
         Card a = new Card(1,1),
@@ -361,6 +375,8 @@ public class TestGetBestCards {
                 "TEST: "+testName+"\nINPUT: "+player1.toString();
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
+
+    //////////////////////////////////////////////////
 
     @Test
     public void testGetBestCards_RoyalStraightFlush(){
@@ -385,5 +401,7 @@ public class TestGetBestCards {
                 "TEST: "+testName+"\nINPUT: "+player1.toString();
         assertArrayEquals(warning, expectedResult, resultObtained);
     }
+
+    //////////////////////////////////////////////////
 
 }
